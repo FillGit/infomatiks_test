@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+    db:
+        container_name: db
+        image: postgres:15.7-alpine3.20
+        ports:
+            - "9876:9876"
+        environment:
+            - POSTGRES_PASSWORD=root
+            - POSTGRES_USER=admin
+            - POSTGRES_DB=fastapi_database
+        command:
+            - "postgres"
+            - "-c"
+            - "port=9876"
+        volumes:
+            - .postgres:/var/lib/postgres/data
+
+
+
+        

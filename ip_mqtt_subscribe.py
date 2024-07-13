@@ -83,7 +83,7 @@ def get_gst_launch(rtsp_url: str, md: dict[str]) -> str:
 
 
 def ip_mqtt_camera(rtsp_url: str):
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(bind=engine)
     session = Session(bind=engine)
 
     mqttBroker = 'mqtt.eclipseprojects.io'

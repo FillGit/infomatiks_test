@@ -8,3 +8,7 @@ dump.rdb
 example_codes/
 
 .postgres
+
+infomatiks_sql.db
+
+.pytest_cache/

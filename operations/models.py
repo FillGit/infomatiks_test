@@ -10,7 +10,6 @@ class Operation(Base):
     coordinatex = Column(String(20), nullable=False)
     coordinatey = Column(String(20), nullable=False)
     out_n = Column(String(20), nullable=False)
-    coordinates_time = Column(DateTime())
-    out_time = Column(DateTime())
+    coordinates_time = Column(String(30), nullable=False)
+    out_time = Column(String(30), nullable=False)
     name_time = Column(String(20), nullable=False)
-

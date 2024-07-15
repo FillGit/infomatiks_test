@@ -16,6 +16,7 @@ from operations.models import Operation
 from sqlalchemy.orm import Session
 
 
+session = Session(bind=engine)
 received_messages = []
 
 
@@ -62,18 +63,22 @@ def get_popen(rtsp_url: str, received_mes: str,
 
     if not last_mes:
         return sp.Popen(shlex.split(get_gst_launch(rtsp_url, md)),
-                        stdout=sp.PIPE)
+                        stdout=sp.PIPE, stderr=sp.PIPE)
 
     if md['out_time'] != last_md['out_time']:
         p.send_signal(signal.SIGINT)
         p.stdout.close()
         p.wait()
         return sp.Popen(shlex.split(get_gst_launch(rtsp_url, md)),
-                        stdout=sp.PIPE)
+                        stdout=sp.PIPE, stderr=sp.PIPE)
     return p
 
 
 def get_gst_launch(rtsp_url: str, md: dict[str]) -> str:
+    with open('rtsp_url.txt', 'w+', encoding='utf-8') as f:
+        f.truncate(0)
+        f.write(rtsp_url)
+
     gstreamer_exe = 'gst-launch-1.0'
     name_time = f"{md['name']}-{md['out_time'][-8:].replace(':', '_')}.mp4"
     gst_launch = f"{gstreamer_exe} rtspsrc location={rtsp_url} ! "
@@ -82,9 +87,8 @@ def get_gst_launch(rtsp_url: str, md: dict[str]) -> str:
     return gst_launch
 
 
-def ip_mqtt_camera(rtsp_url: str):
+def ip_mqtt_camera(session: Session, rtsp_url: str):
     Base.metadata.create_all(bind=engine)
-    session = Session(bind=engine)
 
     mqttBroker = 'mqtt.eclipseprojects.io'
     client = mqtt.Client('video recorder')
@@ -114,21 +118,37 @@ def ip_mqtt_camera(rtsp_url: str):
     client.loop_stop()
 
 
+def correct_rtsp_url(rtsp_url):
+    gstreamer_exe = 'gst-launch-1.0'
+    gst_launch = f"{gstreamer_exe} rtspsrc location={rtsp_url} "
+    p = sp.Popen(shlex.split(gst_launch), stdout=sp.PIPE, stderr=sp.PIPE)
+    res = p.communicate()
+    error = res[1].decode()
+    p.stdout.close()
+    p.wait()
+    if "ERROR: pipeline doesn't want to preroll.\n" == error[-41:]:
+        print('Вы неправильно указали rtsp_url')
+        return False
+    return True
+
+
 if __name__ == "__main__":
     # rtsp://admin:admin@192.168.1.99:554/av0_0
     rtsp_url = input('Введите свой rtsp_url: ')
 
-    t1 = threading.Thread(target=ip_mqtt_camera, args=(rtsp_url, ))
-    t2 = threading.Thread(target=ip_mqtt_publisher)
+    if correct_rtsp_url(rtsp_url):
+        t1 = threading.Thread(target=ip_mqtt_camera, args=(session,
+                                                           rtsp_url,))
+        t2 = threading.Thread(target=ip_mqtt_publisher)
 
-    t1.start()
-    t2.start()
+        t1.start()
+        t2.start()
 
-    while True:
-        m = input('Введите q и ENTER, для остановки процесса: ')
-        if m == 'q':
-            globals.flag = False
-            break
+        while True:
+            m = input('Введите q и ENTER, для остановки процесса: ')
+            if m == 'q':
+                globals.flag = False
+                break
 
-    t1.join()
-    t2.join()
+        t1.join()
+        t2.join()

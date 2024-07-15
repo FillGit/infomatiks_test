@@ -10,5 +10,8 @@ example_codes/
 .postgres
 
 infomatiks_sql.db
+infomatiks_test_sql.db
 
 .pytest_cache/
+
+rtsp_url.txt

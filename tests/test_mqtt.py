@@ -43,7 +43,6 @@ def test_ip_mqtt_publisher(session):
     t2.join()
 
     res = received_messages[0].split('+')
-    print(received_messages[0])
     assert_that(res[0], has_length(8))
     assert_that(res[1], has_length(3))
     assert_that(res[4], is_('out1'))
@@ -81,5 +80,3 @@ def test_get_popen():
 
     assert_that(get_popen(RTSP_URL_CORRECT, received_mes, p, last_mes),
                 is_(Popen))
-    time.sleep(10)
-    os.remove('out/out1/ZBGu-22_48_12.mp4')

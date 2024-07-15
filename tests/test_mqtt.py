@@ -81,5 +81,5 @@ def test_get_popen():
 
     assert_that(get_popen(RTSP_URL_CORRECT, received_mes, p, last_mes),
                 is_(Popen))
-    time.sleep(5)
+    time.sleep(10)
     os.remove('out/out1/ZBGu-22_48_12.mp4')

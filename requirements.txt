@@ -5,3 +5,4 @@ psycopg2-binary==2.9.5
 SQLAlchemy==2.0.30
 paho-mqtt==1.6.1
 pytest==8.2.2
+PyHamcrest==2.1.0

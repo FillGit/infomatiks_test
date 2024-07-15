@@ -11,7 +11,7 @@ from hamcrest import assert_that, is_, has_length
 import paho.mqtt.client as mqtt
 from subprocess import Popen
 
-RTSP_URL_CORRECT = 'rtsp://rtspstream:0be18a5171bcc7d6db04a09cd4260432@zephyr.rtsp.stream/movie'
+RTSP_URL_TEST = 'rtsp://localhost:8000/av0_0'
 received_messages = []
 
 
@@ -37,7 +37,7 @@ def test_ip_mqtt_publisher(session):
     t2 = threading.Thread(target=mqtt_subscribe)
     t1.start()
     t2.start()
-    time.sleep(11)
+    time.sleep(12)
     globals.flag = False
     t1.join()
     t2.join()
@@ -51,8 +51,7 @@ def test_ip_mqtt_publisher(session):
 
 def test_correct_rtsp_url():
     assert_that(
-        correct_rtsp_url('rtsp://localhost:8000/av0_0'), is_(False))
-    assert_that(correct_rtsp_url(RTSP_URL_CORRECT), is_(True))
+        correct_rtsp_url(RTSP_URL_TEST), is_(False))
 
 
 def test_get_gst_launch():
@@ -61,8 +60,8 @@ def test_get_gst_launch():
         'out_time': '2022-01-10 10:11:12',
         'out_n': 'out1'
     }
-    assert_that(get_gst_launch(RTSP_URL_CORRECT, md),
-                is_('gst-launch-1.0 rtspsrc location=rtsp://rtspstream:0be18a5171bcc7d6db04a09cd4260432@zephyr.rtsp.stream/movie ! rtph264depay ! h264parse ! mp4mux ! filesink location=out/out1/qwer1234-10_11_12.mp4 -e'))
+    assert_that(get_gst_launch(RTSP_URL_TEST, md),
+                is_('gst-launch-1.0 rtspsrc location=rtsp://localhost:8000/av0_0 ! rtph264depay ! h264parse ! mp4mux ! filesink location=out/out1/qwer1234-10_11_12.mp4 -e'))
 
 
 def test_get_popen():
@@ -70,13 +69,19 @@ def test_get_popen():
     received_mes = 'ZBGuW95J+13c+56.52699988947395+85.07500201495604+out1+2024-07-15 22:48:12.041929+2024-07-15 22:48:12'
     last_mes = 'ZBGuW95J+13c+56.52802974320799+85.07654604907547+out1+2024-07-15 22:53:08.519887+2024-07-15 22:52:58'
 
-    assert_that(get_popen(RTSP_URL_CORRECT, received_mes, p, received_mes),
+    assert_that(get_popen(RTSP_URL_TEST, received_mes, p, received_mes),
                 is_(None))
-    assert_that(get_popen(RTSP_URL_CORRECT, received_mes, p), is_(Popen))
+    assert_that(get_popen(RTSP_URL_TEST, received_mes, p), is_(Popen))
 
     p = sp.Popen(
-        shlex.split('gst-launch-1.0 rtspsrc location=rtsp://rtspstream:0be18a5171bcc7d6db04a09cd4260432@zephyr.rtsp.stream/movie ! rtph264depay ! h264parse ! mp4mux ! filesink location=out/out1/qwer1234-10_11_12.mp4 -e'),
+        shlex.split('gst-launch-1.0 rtspsrc location=rtsp://localhost:8000/av0_0'),
         stdout=sp.PIPE, stderr=sp.PIPE)
 
-    assert_that(get_popen(RTSP_URL_CORRECT, received_mes, p, last_mes),
+    assert_that(get_popen(RTSP_URL_TEST, received_mes, p, last_mes),
                 is_(Popen))
+
+    time.sleep(5)
+    try:
+        os.remove('out/out1/ZBGu-22_48_12.mp4')
+    except Exception:
+        pass

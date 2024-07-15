@@ -3,9 +3,11 @@ from sqlalchemy.orm import sessionmaker
 from typing import Generator
 from sqlalchemy.ext.declarative import declarative_base
 
-SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://admin:root@localhost:9876/fastapi_database"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SQLALCHEMY_DATABASE_URL = "sqlite:///./infomatiks_sql.db"
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL,
+                       connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False,
                             autoflush=False, bind=engine)

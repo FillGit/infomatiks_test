@@ -23,8 +23,7 @@ def get_metadata_video_fragments(name_time: str,
         Operation).filter(Operation.name_time.like(name_time + "%")).all()
 
 
-def get_gst_launch() -> str:
-    rtsp_url = globals.rtsp_url
+def get_gst_launch(rtsp_url) -> str:
     gstreamer_exe = 'gst-launch-1.0'
     gst_launch = f"{gstreamer_exe} rtspsrc location={rtsp_url} "
     gst_launch += "latency=10 ! queue ! rtph264depay ! h264parse ! "
@@ -35,7 +34,13 @@ def get_gst_launch() -> str:
 
 @router.get('/video')
 def get_video():
-    p = sp.Popen(shlex.split(get_gst_launch()), stdout=sp.PIPE)
+    try:
+        with open('rtsp_url.txt', 'r', encoding='utf-8') as f:
+            rtsp_url = f.readlines()[0]
+    except Exception:
+        return ['нужен файл rtsp_url.txt, запустите ip_mqtt_subscribe.py']
+
+    p = sp.Popen(shlex.split(get_gst_launch(rtsp_url)), stdout=sp.PIPE)
     while True:
         if not p.stdout.read():
             break
@@ -45,7 +50,7 @@ def get_video():
     return []
 
 
-@router.get('/emulation server')
+@router.get('/emulation_server')
 def get_emulation_server():
     sp.call(["xdg-open", "out"])
     return []

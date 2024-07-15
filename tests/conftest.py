@@ -1,3 +1,5 @@
+import pytest
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -31,4 +33,16 @@ def override_get_db():
 app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
-session = Session(bind=engine)
+
+
+@pytest.fixture(scope="function")
+def session():
+    connection = engine.connect()
+    transaction = connection.begin()
+
+    session = Session(bind=connection)
+
+    yield session
+
+    session.rollback()
+    connection.close()

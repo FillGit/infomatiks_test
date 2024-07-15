@@ -1,11 +1,11 @@
 import os
 
-from .conftest import client, session
+from .conftest import client
 from hamcrest import assert_that, is_
 from operations.models import Operation
 
 
-def test_v1_metadata_video_fragments():
+def test_v1_metadata_video_fragments(session):
     result = Operation(name='tttt',
                        flight_number='17a',
                        coordinatex='85.1',

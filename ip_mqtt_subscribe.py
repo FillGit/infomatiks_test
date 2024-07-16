@@ -1,5 +1,6 @@
 import globals
 
+import os
 import signal
 import shlex
 import threading
@@ -148,6 +149,7 @@ if __name__ == "__main__":
             m = input('Введите q и ENTER, для остановки процесса: ')
             if m == 'q':
                 globals.flag = False
+                os.remove('rtsp_url.txt')
                 break
 
         t1.join()

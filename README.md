@@ -13,7 +13,7 @@ Installation
 
 Для того, чтобы начать процесс, вам нужно:
 
-    в файле ip_mqtt_subscribe.service поменять, то что в закрытых скобка.
+    В файле ip_mqtt_subscribe.service поменять, то что в закрытых скобка.
     Например:
 
         [Unit]
@@ -28,9 +28,9 @@ Installation
         [Install]
         WantedBy=multi-user.target
 
-    Добавте этот файл в /etc/systemd/system.
+    Добавьте этот файл в /etc/systemd/system
 
-    в файле rtsp_url.txt. Например:
+    В файле rtsp_url.txt напишите правильный rtsp link своей камеры. Например:
         
         rtsp://admin:admin@192.168.1.99:554/av0_0
 

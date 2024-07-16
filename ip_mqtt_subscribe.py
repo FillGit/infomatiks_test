@@ -75,15 +75,12 @@ def get_popen(rtsp_url: str, received_mes: str,
 
 
 def get_gst_launch(rtsp_url: str, md: dict[str]) -> str:
-    with open('rtsp_url.txt', 'w+', encoding='utf-8') as f:
-        f.truncate(0)
-        f.write(rtsp_url)
-
     gstreamer_exe = 'gst-launch-1.0'
     name_time = f"{md['name']}-{md['out_time'][-8:].replace(':', '_')}.mp4"
+    path_out = f"out/{md['out_n']}/{name_time}"
     gst_launch = f"{gstreamer_exe} rtspsrc location={rtsp_url} ! "
     gst_launch += "rtph264depay ! h264parse ! mp4mux ! "
-    gst_launch += f"filesink location=out/{md['out_n']}/{name_time} -e"
+    gst_launch += f"filesink location={path_out} -e"
     return gst_launch
 
 
@@ -134,7 +131,9 @@ def correct_rtsp_url(rtsp_url):
 
 if __name__ == "__main__":
     # rtsp://admin:admin@192.168.1.99:554/av0_0
-    rtsp_url = input('Введите свой rtsp_url: ')
+
+    with open('rtsp_url.txt', 'r', encoding='utf-8') as f:
+        rtsp_url = f.readlines()[0]
 
     if correct_rtsp_url(rtsp_url):
         t1 = threading.Thread(target=ip_mqtt_camera, args=(session,
@@ -145,10 +144,4 @@ if __name__ == "__main__":
         t2.start()
 
         while True:
-            m = input('Введите q и ENTER, для остановки процесса: ')
-            if m == 'q':
-                globals.flag = False
-                break
-
-        t1.join()
-        t2.join()
+            pass

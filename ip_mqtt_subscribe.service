@@ -1,0 +1,11 @@
+[Unit]
+Description="ip mqtt subscribe"
+
+[Service]
+User=dima
+Group=dima
+WorkingDirectory=/home/dima/infomatiks_test/
+ExecStart=/usr/bin/python3 ip_mqtt_subscribe.py
+
+[Install]
+WantedBy=multi-user.target

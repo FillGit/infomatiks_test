@@ -1,5 +1,3 @@
-import os
-
 from .conftest import client
 from hamcrest import assert_that, is_
 from operations.models import Operation
@@ -42,17 +40,6 @@ def test_v1_video():
     assert response.status_code == 200, response.text
     data = response.json()
     assert data == []
-
-
-def test_v1_video_not_rtsp_url():
-    try:
-        os.remove('rtsp_url.txt')
-    except Exception:
-        pass
-
-    response = client.get("/v1/video")
-    data = response.json()
-    assert data == ['нужен файл rtsp_url.txt, запустите ip_mqtt_subscribe.py']
 
 
 def test_v1_emulation_server():

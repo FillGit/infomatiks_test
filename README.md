@@ -13,6 +13,8 @@ Installation
 
     source venv/bin/activate
 
+    pip install -r requirements.txt
+
 
 Для того, чтобы начать процесс, вам нужно запустить:
 

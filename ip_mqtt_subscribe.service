@@ -2,9 +2,9 @@
 Description="ip mqtt subscribe"
 
 [Service]
-User=dima
-Group=dima
-WorkingDirectory=/home/dima/infomatiks_test/
+User={пользователь}
+Group={пользователь}
+WorkingDirectory={абсолютный путь к infomatiks_test}
 ExecStart=/usr/bin/python3 ip_mqtt_subscribe.py
 
 [Install]
